@@ -64,42 +64,81 @@ pipeline {
     }
     
     // Post-build Actions: This section runs after all stages are completed.
-    post {
+//     post {
+//         always {
+//             script {
+//                 def jobName = env.JOB_NAME
+//                 def buildNumber = env.BUILD_NUMBER
+//                 def buildStatus = currentBuild.currentResult
+//                 def buildUrl = env.BUILD_URL
+
+//                 def emailSubject
+//                 def emailBody
+
+//                 if (buildStatus == 'SUCCESS') {
+//                     emailSubject = "SUCCESS: Jenkins Pipeline '${jobName}' - Build #${buildNumber}"
+//                     emailBody = """
+//                         <h2>Build Successful</h2>
+//                         <p><strong>Pipeline:</strong> ${jobName}</p>
+//                         <p><strong>Build Number:</strong> ${buildNumber}</p>
+//                         <p>The pipeline completed successfully.</p>
+//                         <p>Visit the build page for more details: <a href="${buildUrl}">${buildUrl}</a></p>
+//                     """
+//                 } else {
+//                     emailSubject = "FAILURE: Jenkins Pipeline '${jobName}' - Build #${buildNumber}"
+//                     emailBody = """
+//                         <h2>Build Failed</h2>
+//                         <p><strong>Pipeline:</strong> ${jobName}</p>
+//                         <p><strong>Build Number:</strong> ${buildNumber}</p>
+//                         <p>The pipeline has failed. Please check the logs.</p>
+//                         <p>Visit the build page for more details: <a href="${buildUrl}">${buildUrl}</a></p>
+//                     """
+//                 }
+
+//                 emailext (
+//                     to: 'sare@osidigital.com',
+//                     subject: emailSubject,
+//                     body: emailBody,
+//                     mimeType: 'text/html'
+//                 )
+//             }
+//         }
+        
+//         success {
+//             echo 'Build & Test pipeline completed successfully!'
+//         }
+//         failure {
+//             echo 'Build failed. Check the logs.'
+//         }
+//     }
+// }
+
+   post {
         always {
             script {
                 def jobName = env.JOB_NAME
                 def buildNumber = env.BUILD_NUMBER
                 def buildStatus = currentBuild.currentResult
-                def buildUrl = env.BUILD_URL
-
+                
                 def emailSubject
-                def emailBody
-
+                
+                // Set a dynamic subject line based on the build's status.
                 if (buildStatus == 'SUCCESS') {
                     emailSubject = "SUCCESS: Jenkins Pipeline '${jobName}' - Build #${buildNumber}"
-                    emailBody = """
-                        <h2>Build Successful</h2>
-                        <p><strong>Pipeline:</strong> ${jobName}</p>
-                        <p><strong>Build Number:</strong> ${buildNumber}</p>
-                        <p>The pipeline completed successfully.</p>
-                        <p>Visit the build page for more details: <a href="${buildUrl}">${buildUrl}</a></p>
-                    """
                 } else {
                     emailSubject = "FAILURE: Jenkins Pipeline '${jobName}' - Build #${buildNumber}"
-                    emailBody = """
-                        <h2>Build Failed</h2>
-                        <p><strong>Pipeline:</strong> ${jobName}</p>
-                        <p><strong>Build Number:</strong> ${buildNumber}</p>
-                        <p>The pipeline has failed. Please check the logs.</p>
-                        <p>Visit the build page for more details: <a href="${buildUrl}">${buildUrl}</a></p>
-                    """
                 }
+
+                // Read the HTML template from the root of the workspace.
+                // This file should be in your 'jenkins-files' Git repo, next to your Jenkinsfile.
+                def emailBody = readFile 'email-template.html'
 
                 emailext (
                     to: 'sare@osidigital.com',
                     subject: emailSubject,
-                    body: emailBody,
-                    mimeType: 'text/html'
+                    mimeType: 'text/html',
+                    // Use the content from the file as the email body.
+                    body: emailBody
                 )
             }
         }
