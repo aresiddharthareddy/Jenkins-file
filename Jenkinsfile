@@ -129,15 +129,14 @@ pipeline {
                     emailSubject = "FAILURE: Jenkins Pipeline '${jobName}' - Build #${buildNumber}"
                 }
 
-                // Read the HTML template from the root of the workspace.
-                // This file should be in your 'jenkins-files' Git repo, next to your Jenkinsfile.
-                def emailBody = readFile 'email-template.html'
+
+                def emailBody = readFile 'my-email-template.html'
 
                 emailext (
                     to: 'sare@osidigital.com',
                     subject: emailSubject,
                     mimeType: 'text/html',
-                    // Use the content from the file as the email body.
+                    
                     body: emailBody
                 )
             }
