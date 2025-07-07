@@ -1,0 +1,56 @@
+<!--
+  File: my-email-template.html
+  
+  Instructions:
+  1. Save this file as "my-email-template.html".
+  2. Place it in the following directory on your Jenkins master server:
+     ${JENKINS_HOME}/email-templates/
+     (You may need to create the 'email-templates' directory if it doesn't exist).
+  3. The pipeline will then be able to reference this file.
+  
+  The ${...} variables are special tokens from the Email Extension plugin 
+  that will be replaced with build information automatically.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 14px; }
+    .container { border: 1px solid #ddd; padding: 15px; max-width: 600px; }
+    .header-success { color: #28a745; }
+    .header-failure { color: #D8000C; }
+    .table { border-collapse: collapse; width: 100%; margin-top: 15px; }
+    .table td { padding: 8px; border: 1px solid #ddd; }
+    .table .label { font-weight: bold; background-color: #f2f2f2; width: 120px; }
+    .status-success { color: #28a745; font-weight: bold; }
+    .status-failure { color: #D8000C; font-weight: bold; }
+    .link { margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- The header color changes based on the build status -->
+    <h2 class="header-${build.result.toLowerCase()}">Build ${build.result}</h2>
+
+    <table class="table">
+      <tr>
+        <td class="label">Project</td>
+        <td>${project.name}</td>
+      </tr>
+      <tr>
+        <td class="label">Build Number</td>
+        <td>#${build.number}</td>
+      </tr>
+      <tr>
+        <td class="label">Status</td>
+        <!-- The status text color also changes -->
+        <td class="status-${build.result.toLowerCase()}">${build.result}</td>
+      </tr>
+    </table>
+
+    <p class="link">
+      Check the console output at: <a href="${build.url}">${build.url}</a>
+    </p>
+  </div>
+</body>
+</html>
