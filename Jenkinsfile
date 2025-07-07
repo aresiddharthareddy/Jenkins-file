@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     // Trigger: This section schedules the pipeline to run every 5 minutes.
-    triggers {
-        cron('H/5 * * * *')
-    }
+    // triggers {
+    //     cron('H/5 * * * *')
+    // }
 
     environment {
         ARTIFACT = 'target/*.jar'
