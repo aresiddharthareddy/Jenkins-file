@@ -64,80 +64,41 @@ pipeline {
     }
     
     // Post-build Actions: This section runs after all stages are completed.
-//     post {
-//         always {
-//             script {
-//                 def jobName = env.JOB_NAME
-//                 def buildNumber = env.BUILD_NUMBER
-//                 def buildStatus = currentBuild.currentResult
-//                 def buildUrl = env.BUILD_URL
-
-//                 def emailSubject
-//                 def emailBody
-
-//                 if (buildStatus == 'SUCCESS') {
-//                     emailSubject = "SUCCESS: Jenkins Pipeline '${jobName}' - Build #${buildNumber}"
-//                     emailBody = """
-//                         <h2>Build Successful</h2>
-//                         <p><strong>Pipeline:</strong> ${jobName}</p>
-//                         <p><strong>Build Number:</strong> ${buildNumber}</p>
-//                         <p>The pipeline completed successfully.</p>
-//                         <p>Visit the build page for more details: <a href="${buildUrl}">${buildUrl}</a></p>
-//                     """
-//                 } else {
-//                     emailSubject = "FAILURE: Jenkins Pipeline '${jobName}' - Build #${buildNumber}"
-//                     emailBody = """
-//                         <h2>Build Failed</h2>
-//                         <p><strong>Pipeline:</strong> ${jobName}</p>
-//                         <p><strong>Build Number:</strong> ${buildNumber}</p>
-//                         <p>The pipeline has failed. Please check the logs.</p>
-//                         <p>Visit the build page for more details: <a href="${buildUrl}">${buildUrl}</a></p>
-//                     """
-//                 }
-
-//                 emailext (
-//                     to: 'sare@osidigital.com',
-//                     subject: emailSubject,
-//                     body: emailBody,
-//                     mimeType: 'text/html'
-//                 )
-//             }
-//         }
-        
-//         success {
-//             echo 'Build & Test pipeline completed successfully!'
-//         }
-//         failure {
-//             echo 'Build failed. Check the logs.'
-//         }
-//     }
-// }
-
-   post {
+    post {
         always {
             script {
                 def jobName = env.JOB_NAME
                 def buildNumber = env.BUILD_NUMBER
                 def buildStatus = currentBuild.currentResult
-                
+                def buildUrl = env.BUILD_URL
+
                 def emailSubject
-                
-                // Set a dynamic subject line based on the build's status.
+                def emailBody
+
                 if (buildStatus == 'SUCCESS') {
                     emailSubject = "SUCCESS: Jenkins Pipeline '${jobName}' - Build #${buildNumber}"
+                    emailBody = """
+                        <h2>Build Successful</h2>
+                        <p><strong>Pipeline:</strong> ${jobName}</p>
+                        <p><strong>Build Number:</strong> ${buildNumber}</p>
+                        <p>The pipeline completed successfully.</p>
+                        <p>Visit the build page for more details: <a href="${buildUrl}">${buildUrl}</a></p>
+                    """
                 } else {
                     emailSubject = "FAILURE: Jenkins Pipeline '${jobName}' - Build #${buildNumber}"
+                    emailBody = """
+                        <h2>Build Failed</h2>
+                        <p><strong>Pipeline:</strong> ${jobName}</p>
+                        <p><strong>Build Number:</strong> ${buildNumber}</p>
+                        <p>The pipeline has failed. Please check the logs.</p>
+                        <p>Visit the build page for more details: <a href="${buildUrl}">${buildUrl}</a></p>
+                    """
                 }
-
-
-                def emailBody = readFile 'my-email-template.html'
-
                 emailext (
                     to: 'sare@osidigital.com',
                     subject: emailSubject,
-                    mimeType: 'text/html',
-                    
-                    body: emailBody
+                    body: emailBody,
+                    mimeType: 'text/html'
                 )
             }
         }
@@ -150,3 +111,41 @@ pipeline {
         }
     }
 }
+
+//    post {
+//         always {
+//             script {
+//                 def jobName = env.JOB_NAME
+//                 def buildNumber = env.BUILD_NUMBER
+//                 def buildStatus = currentBuild.currentResult
+                
+//                 def emailSubject
+                
+//                 // Set a dynamic subject line based on the build's status.
+//                 if (buildStatus == 'SUCCESS') {
+//                     emailSubject = "SUCCESS: Jenkins Pipeline '${jobName}' - Build #${buildNumber}"
+//                 } else {
+//                     emailSubject = "FAILURE: Jenkins Pipeline '${jobName}' - Build #${buildNumber}"
+//                 }
+
+
+//                 def emailBody = readFile 'my-email-template.html'
+
+//                 emailext (
+//                     to: 'sare@osidigital.com',
+//                     subject: emailSubject,
+//                     mimeType: 'text/html',
+                    
+//                     body: emailBody
+//                 )
+//             }
+//         }
+        
+//         success {
+//             echo 'Build & Test pipeline completed successfully!'
+//         }
+//         failure {
+//             echo 'Build failed. Check the logs.'
+//         }
+//     }
+// }

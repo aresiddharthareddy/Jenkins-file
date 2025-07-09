@@ -1,56 +1,167 @@
 <!--
-  File: my-email-template.html
-  
-  Instructions:
-  1. Save this file as "my-email-template.html".
-  2. Place it in the following directory on your Jenkins master server:
-     ${JENKINS_HOME}/email-templates/
-     (You may need to create the 'email-templates' directory if it doesn't exist).
-  3. The pipeline will then be able to reference this file.
-  
-  The ${...} variables are special tokens from the Email Extension plugin 
-  that will be replaced with build information automatically.
+  Jenkins Build Notification Email Template
+  Place in: ${JENKINS_HOME}/email-templates/
 -->
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <style>
-    body { font-family: Arial, sans-serif; font-size: 14px; }
-    .container { border: 1px solid #ddd; padding: 15px; max-width: 600px; }
-    .header-success { color: #28a745; }
-    .header-failure { color: #D8000C; }
-    .table { border-collapse: collapse; width: 100%; margin-top: 15px; }
-    .table td { padding: 8px; border: 1px solid #ddd; }
-    .table .label { font-weight: bold; background-color: #f2f2f2; width: 120px; }
-    .status-success { color: #28a745; font-weight: bold; }
-    .status-failure { color: #D8000C; font-weight: bold; }
-    .link { margin-top: 15px; }
+    body {
+      background: #f4f6f8;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 15px;
+      color: #222;
+      margin: 0;
+      padding: 0;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      max-width: 480px;
+      margin: 36px auto;
+      padding: 0 0 24px 0;
+      border: 1px solid #e3e6ea;
+      overflow: hidden;
+    }
+    .status-banner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 22px 32px;
+      font-size: 1.3em;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+    .status-success { background: #28a745; }
+    .status-failure { background: #d8000c; }
+    .status-unstable { background: #e6a700; color: #222; }
+    .status-aborted { background: #6c757d; }
+    .status-other { background: #007bff; }
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0;
+      padding: 0 32px;
+    }
+    .summary-table td {
+      padding: 10px 32px 10px 32px;
+      border: none;
+      vertical-align: top;
+      font-size: 1em;
+    }
+    .summary-table .label {
+      color: #6c757d;
+      font-weight: 500;
+      width: 120px;
+      padding-right: 0;
+      text-align: right;
+    }
+    .summary-table .value {
+      font-weight: 400;
+      text-align: left;
+      padding-left: 18px;
+      word-break: break-all;
+    }
+    .divider {
+      border-top: 1px solid #e3e6ea;
+      margin: 18px 0 0 0;
+    }
+    .section-title {
+      font-size: 1.08em;
+      font-weight: 600;
+      color: #222;
+      margin: 24px 32px 8px 32px;
+      letter-spacing: 0.2px;
+    }
+    .footer {
+      font-size: 0.97em;
+      color: #6c757d;
+      margin: 24px 32px 0 32px;
+      text-align: right;
+    }
+    a {
+      color: #007bff;
+      text-decoration: none;
+      word-break: break-all;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .commit {
+      font-family: 'Fira Mono', 'Consolas', monospace;
+      font-size: 0.98em;
+      background: #f8f9fa;
+      border-radius: 4px;
+      padding: 2px 6px;
+      color: #007b83;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- The header color changes based on the build status -->
-    <h2 class="header-${build.result.toLowerCase()}">Build ${build.result}</h2>
-
-    <table class="table">
+  <div class="card">
+    <div class="status-banner status-${build.result.toLowerCase() == 'success' ? 'success' : build.result.toLowerCase() == 'failure' ? 'failure' : build.result.toLowerCase() == 'unstable' ? 'unstable' : build.result.toLowerCase() == 'aborted' ? 'aborted' : 'other'}">
+      <span>
+        ${build.result == 'SUCCESS' ? '✅' : build.result == 'FAILURE' ? '❌' : build.result == 'UNSTABLE' ? '⚠️' : build.result == 'ABORTED' ? '⏹️' : 'ℹ️'}
+      </span>
+      Build ${build.result}
+    </div>
+    <div class="section-title">Build Summary</div>
+    <table class="summary-table">
       <tr>
         <td class="label">Project</td>
-        <td>${project.name}</td>
+        <td class="value">${project.name}</td>
       </tr>
       <tr>
-        <td class="label">Build Number</td>
-        <td>#${build.number}</td>
+        <td class="label">Build #</td>
+        <td class="value">${build.number}</td>
       </tr>
       <tr>
         <td class="label">Status</td>
-        <!-- The status text color also changes -->
-        <td class="status-${build.result.toLowerCase()}">${build.result}</td>
+        <td class="value status-${build.result.toLowerCase()}">${build.result}</td>
+      </tr>
+      <tr>
+        <td class="label">Started</td>
+        <td class="value">${build.startTimeString}</td>
+      </tr>
+      <tr>
+        <td class="label">Duration</td>
+        <td class="value">${build.durationString}</td>
+      </tr>
+      <tr>
+        <td class="label">Triggered by</td>
+        <td class="value">${build.cause}</td>
+      </tr>
+      <tr>
+        <td class="label">Branch</td>
+        <td class="value">${env.BRANCH_NAME}</td>
+      </tr>
+      <tr>
+        <td class="label">Commit</td>
+        <td class="value"><span class="commit">${GIT_COMMIT}</span></td>
       </tr>
     </table>
-
-    <p class="link">
-      Check the console output at: <a href="${build.url}">${build.url}</a>
-    </p>
+    <div class="divider"></div>
+    <div class="section-title">Links</div>
+    <table class="summary-table">
+      <tr>
+        <td class="label">Build URL</td>
+        <td class="value"><a href="${build.url}">${build.url}</a></td>
+      </tr>
+      <tr>
+        <td class="label">Console Output</td>
+        <td class="value"><a href="${build.url}console">${build.url}console</a></td>
+      </tr>
+      <tr>
+        <td class="label">Changes</td>
+        <td class="value"><a href="${build.url}changes">${build.url}changes</a></td>
+      </tr>
+    </table>
+    <div class="footer">
+      Jenkins Pipeline Notification &mdash; ${project.name}
+    </div>
   </div>
 </body>
 </html>
